@@ -1,0 +1,10 @@
+.inputError {
+  box-shadow: 0px 0px 2px 0.5px rgb(255, 0, 0) inset;
+  border-left: 0px;
+}
+
+.inputError::placeholder {
+  color: rgb(555, 0, 0);
+  font-size: small;
+  font-weight: 600;
+}
