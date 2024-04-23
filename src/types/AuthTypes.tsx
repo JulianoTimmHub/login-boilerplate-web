@@ -16,6 +16,12 @@ export type RegisterUserFormType = {
   password: string;
 }
 
+export type ForgotPasswordFormType = {
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
 export type RegisterResultType = {
   isLoading: boolean;
   statusRegister: StatusOptionsType;

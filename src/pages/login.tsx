@@ -17,7 +17,7 @@ const Login = () => {
         </div>
         <div className="col-6 d-flex flex-column align-items-center justify-content-center">
           <h2 className="mb-5">
-            Olá, que bom ver você denovo
+            Olá, que bom ver você de novo
           </h2>
           <div className="col-8 card p-4 shadow bg-body rounded">
             <div className="col-12 d-flex align-items-center justify-content-center mb-4">
