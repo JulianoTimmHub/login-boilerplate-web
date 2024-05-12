@@ -4,11 +4,12 @@ import nextConfig from '../../next.config.mjs';
 const { 
   protocol,
   host,
-  port
+  port,
+  basePath
 } = nextConfig.env;
 
 export const apiPath = axios.create({
-  baseURL: `${protocol}://${host}:${port}`
+  baseURL: `${protocol}://${host}:${port}${basePath}`
 });
 
 export const concatUrl = (urlPath) => {

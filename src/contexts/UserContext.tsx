@@ -47,11 +47,13 @@ export const UserProvider = ({ children }: any) => {
     setStatusRegister
   ]);
 
-  const registerUser = async ({ username, email, password }: RegisterUserFormType) => {
+  const registerUser = async ({ 
+    username, email, password 
+  }: RegisterUserFormType): Promise<void> => {
     mutateRegisterUser({ username, email, password })
   }
 
-  const resetUserStatus = () => {
+  const resetUserStatus = (): void => {
     setStatusRegister({message: null, color: ''});
   };
 
