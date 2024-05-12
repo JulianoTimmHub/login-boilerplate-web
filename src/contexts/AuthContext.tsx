@@ -91,11 +91,15 @@ export const AuthProvider = ({ children }: any) => {
     setStatusRecoverPassword
   ]);
 
-  const signIn = async ({ email, password }: SignInFormType) => {
+  const signIn = async ({ 
+    email, password 
+  }: SignInFormType): Promise<void> => {
     mutateSignIn({ email, password });
   }
 
-  const recoverPassword = async ({email, newPassword, confirmNewPassword}: RecoverPasswordFormType) => {
+  const recoverPassword = async ({
+    email, newPassword, confirmNewPassword
+  }: RecoverPasswordFormType): Promise<void> => {
     if (newPassword !== confirmNewPassword) {
       setStatusRecoverPassword({message: ESnackbarMessage.RECOVER_PASSWORD.PASSWORDS_NOT_EQUALS, color: 'error'});
     } else {
@@ -103,7 +107,7 @@ export const AuthProvider = ({ children }: any) => {
     }
   }
 
-  const resetAuthStatus = () => {
+  const resetAuthStatus = (): void => {
     setStatusRecoverPassword({message: null, color: ''});
     setStatusSignIn({message: null, color: ''});
   };
