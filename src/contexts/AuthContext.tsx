@@ -1,24 +1,16 @@
-import { AuthContextType, SignInFormType, RegisterUserFormType, StatusOptionsType } from "@/types/AuthTypes";
-import { createContext, useContext, useEffect, useState } from "react";
-import { useRegisterUser } from '../hooks/mutation/useRegisterUser.mutation';
-import { useSignIn } from '../hooks/mutation/useSignIn.mutation';
+import { createContext, useEffect, useState } from "react";
+import { AuthContextType, SignInFormType, RecoverPasswordFormType } from "@/types/AuthTypes";
+import { StatusOptionsType } from "@/types/MessageTypes";
+import { useRecoverPasswordMutation } from '../hooks/mutation/useRecoverPasswordMutation.hook';
+import { useSignInMutation } from '../hooks/mutation/useSignInMutation.hook';
 import { ESnackbarMessage } from "@/components/snackbar/enum/snackbar-message.enum";
 
-const AuthContext = createContext({} as AuthContextType);
+export const AuthContext = createContext({} as AuthContextType);
 
 export const AuthProvider = ({ children }: any) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [statusRegister, setStatusRegister] = useState<StatusOptionsType>({ message: null, color: 'success'});
-  const [statusSignIn, setStatusSignIn] = useState<StatusOptionsType>({ message: null, color: 'success'});
-
-  const {
-    mutate: mutateRegisterUser,
-    isError: isErrorRegister,
-    data: dataRegister,
-    error: errorRegister,
-    isSuccess: isSuccessRegister,
-    isPending: isPendingRegister
-  } = useRegisterUser();
+  const [statusSignIn, setStatusSignIn] = useState<StatusOptionsType>({ message: null, color: ''});
+  const [statusRecoverPassword, setStatusRecoverPassword] = useState<StatusOptionsType>({ message: null, color: ''});
 
   const {
     mutate: mutateSignIn,
@@ -27,35 +19,16 @@ export const AuthProvider = ({ children }: any) => {
     error: errorSignIn,
     isSuccess: isSuccessSignIn,
     isPending: isPendingSignIn
-  } = useSignIn();
+  } = useSignInMutation();
 
-  useEffect(() => {
-    if (isPendingRegister) {
-      setIsLoading(true);
-    }
-
-    if (isSuccessRegister && dataRegister) {
-      if (dataRegister?.response?.status === 409) {
-        setStatusRegister({message: ESnackbarMessage.REGISTER_USER.ALREADY_REGISTER, color: 'error'});
-      } else {
-        setStatusRegister({message: ESnackbarMessage.REGISTER_USER.SUCCESS, color: 'success'});
-      }
-      setIsLoading(false);
-    }
-
-    if (isErrorRegister || errorRegister) {
-      setIsLoading(false);
-      setStatusRegister({message: ESnackbarMessage.REGISTER_USER.ERROR, color: 'error'});
-    }
-  }, [
-    isErrorRegister,
-    dataRegister,
-    errorRegister,
-    isSuccessRegister,
-    isPendingRegister,
-    setIsLoading,
-    setStatusRegister
-  ]);
+  const { 
+    mutate: mutateRecoverPassword,
+    isError: isErrorRecoverPassword,
+    data: dataRecoverPassword,
+    error: errorRecoverPassword,
+    isSuccess: isSuccessRecoverPassword,
+    isPending: isPendingRecoverPassword
+  } = useRecoverPasswordMutation();
 
   useEffect(() => {
     if (isPendingSignIn) {
@@ -87,25 +60,66 @@ export const AuthProvider = ({ children }: any) => {
     setStatusSignIn
   ]);
 
-  const registerUser = async ({ username, email, password }: RegisterUserFormType) => {
-    mutateRegisterUser({ username, email, password })
-  }
+
+  useEffect(() => {
+    if (isPendingRecoverPassword) {
+      setIsLoading(true);
+    }
+
+    if (isSuccessRecoverPassword && dataRecoverPassword) {
+      if (dataRecoverPassword?.response?.status === 404) {
+        setStatusRecoverPassword({message: ESnackbarMessage.RECOVER_PASSWORD.NOT_FOUND, color: 'error'});
+      } else if (dataRecoverPassword?.response?.status === 401) {
+        setStatusRecoverPassword({message: ESnackbarMessage.RECOVER_PASSWORD.ERROR, color: 'error'});
+      } else {
+        setStatusRecoverPassword({message: ESnackbarMessage.RECOVER_PASSWORD.SUCCESS, color: 'success'});
+      }
+      setIsLoading(false);
+    }
+
+    if (isErrorRecoverPassword || errorRecoverPassword) {
+      setIsLoading(false);
+      setStatusRecoverPassword({message: ESnackbarMessage.RECOVER_PASSWORD.NOT_FOUND, color: 'error'});
+    }
+  }, [
+    isErrorRecoverPassword,
+    dataRecoverPassword,
+    errorRecoverPassword,
+    isSuccessRecoverPassword,
+    isPendingRecoverPassword,
+    setIsLoading,
+    setStatusRecoverPassword
+  ]);
 
   const signIn = async ({ email, password }: SignInFormType) => {
     mutateSignIn({ email, password });
   }
 
+  const recoverPassword = async ({email, newPassword, confirmNewPassword}: RecoverPasswordFormType) => {
+    if (newPassword !== confirmNewPassword) {
+      setStatusRecoverPassword({message: ESnackbarMessage.RECOVER_PASSWORD.PASSWORDS_NOT_EQUALS, color: 'error'});
+    } else {
+      mutateRecoverPassword({email, newPassword, confirmNewPassword});
+    }
+  }
+
+  const resetAuthStatus = () => {
+    setStatusRecoverPassword({message: null, color: ''});
+    setStatusSignIn({message: null, color: ''});
+  };
+
   const value = {
     signIn,
-    registerUser,
-    registerResults: {
-      isLoading,
-      statusRegister
-    },
+    recoverPassword,
     signInResults: {
       isLoading,
       statusSignIn
-    }
+    },
+    recoverPasswordResults: {
+      isLoading,
+      statusRecoverPassword
+    },
+    resetAuthStatus
   }
 
   return (
@@ -113,20 +127,4 @@ export const AuthProvider = ({ children }: any) => {
       {children}
     </AuthContext.Provider>
   )
-}
-
-export const useAuth = () => {
-  const {
-    signIn,
-    registerUser,
-    registerResults,
-    signInResults
-  } = useContext(AuthContext);
-
-  return {
-    signIn,
-    registerUser,
-    registerResults,
-    signInResults
-  }
 }

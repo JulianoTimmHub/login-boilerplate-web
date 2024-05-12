@@ -8,5 +8,11 @@ export const ESnackbarMessage = {
     SUCCESS: 'Login efetuado com sucesso!',
     ERROR: 'Credenciais invalidas!',
     NOT_FOUND: 'Usuário não encontrado!'
+  },
+  RECOVER_PASSWORD: {
+    NOT_FOUND: 'Usuário não encontrado!',
+    PASSWORDS_NOT_EQUALS: 'As senhas devem ser iguais!',
+    ERROR: 'Erro ao tenhar alterar senha!',
+    SUCCESS: 'Senha alterada com sucesso!'
   }
 }

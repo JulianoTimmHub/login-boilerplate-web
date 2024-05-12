@@ -1,19 +1,18 @@
 import { useEffect, useState } from "react"
 import { Alert, Snackbar } from "@mui/material"
 
-export const SnackbarMessage = ({ status }: any) => {
+export const SnackbarMessage = ({ status, resetStatus }: any) => {
   const [open, setOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    setOpen(true);
-  }, [status?.message, setOpen])
-
-  useEffect(() => {
-    const timeoutClose = setTimeout(() => {
-      setOpen(false);
-    }, 5000);
-    return () => clearTimeout(timeoutClose);
-  }, [setOpen])
+    if (status.message) 
+      setOpen(true);
+  }, [status.message, setOpen])
+  
+  const closeSnackbar = (): void => {
+    setOpen(false);
+    resetStatus();
+  }
 
   return (
     <Snackbar
@@ -22,13 +21,15 @@ export const SnackbarMessage = ({ status }: any) => {
         vertical: 'top',
         horizontal: 'right'
       }}
+      onClose={() => closeSnackbar()}
+      autoHideDuration={4000}
     >
       <Alert
-        severity={status?.color}
+        severity={status.color}
         variant="filled"
-        onClose={() => setOpen(false)}
+        onClose={() => closeSnackbar()}
       >
-        {status?.message}
+        {status.message}
       </Alert>
     </Snackbar>
   )
