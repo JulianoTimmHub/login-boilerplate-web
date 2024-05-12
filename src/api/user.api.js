@@ -1,14 +1,9 @@
-import axios from "axios"
+import { concatUrl } from "./api";
 
-export const registerUser = async ({
-  username,
-  email,
-  password
-}) => {
-  return await axios.post('http://localhost:3001/user', {
-      username,
-      email,
-      password
-    }).then((res) => res)
-    .catch((res) => res);
+export const registerUser = async ({ username, email, password }) => {
+  const userApi = concatUrl('/user');
+
+  return await userApi.post('/registerUser', { username, email, password })
+  .then((res) => res)
+  .catch((res) => res);
 }

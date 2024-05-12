@@ -1,18 +1,19 @@
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuthContext } from "@/hooks/context/useAuthContext.hook";
 import { useForm } from "react-hook-form"
-import { SignInFormType } from "../../types/AuthTypes";
-import styles from '../../styles/login.module.css';
+import { SignInFormType } from "../../../types/AuthTypes";
 
 import { yupResolver } from "@hookform/resolvers/yup";
 import { string, object } from 'yup';
+import styles from '../../../styles/login.module.css';
 
 export const LoginForm = ({ }) => {
-  const { signIn } = useAuth();
+  const { signIn } = useAuthContext();
 
   const validateForm = object().shape({
     email: string().required('Informe seu e-mail'),
     password: string().required('Informe sua senha'),
   })
+  
   const {
     register,
     handleSubmit,

@@ -1,8 +1,11 @@
+import { StatusOptionsType } from "./MessageTypes";
+
 export type AuthContextType = {
-  registerUser: (data: RegisterUserFormType) => Promise<void>;
   signIn: (data: SignInFormType) => Promise<void>;
-  registerResults: RegisterResultType;
-  signInResults: SignInResultType
+  recoverPassword: (data: RecoverPasswordFormType) => Promise<void>;
+  signInResults: SignInResultType;
+  recoverPasswordResults: RecoverPasswordResultType;
+  resetAuthStatus: () => void;
 }
 
 export type SignInFormType = {
@@ -10,29 +13,18 @@ export type SignInFormType = {
   password: string;
 }
 
-export type RegisterUserFormType = {
-  username: string;
+export type RecoverPasswordFormType = {
   email: string;
-  password: string;
+  newPassword: string;
+  confirmNewPassword: string;
 }
 
-export type ForgotPasswordFormType = {
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
-
-export type RegisterResultType = {
+export type RecoverPasswordResultType = {
   isLoading: boolean;
-  statusRegister: StatusOptionsType;
+  statusRecoverPassword: StatusOptionsType;
 }
 
 export type SignInResultType = {
   isLoading: boolean;
   statusSignIn: StatusOptionsType
-}
-
-export type StatusOptionsType = {
-  message: string | null;
-  color: string | null;
 }

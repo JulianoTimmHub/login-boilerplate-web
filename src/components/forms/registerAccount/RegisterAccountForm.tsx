@@ -1,22 +1,23 @@
-import { useAuth } from "@/contexts/AuthContext";
 import { useForm } from "react-hook-form";
-import { RegisterUserFormType } from "@/types/AuthTypes";
+import { RegisterUserFormType } from "@/types/UserTypes";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { string, object } from 'yup';
-import styles from '../../styles/login.module.css';
+import styles from '../../../styles/login.module.css';
+import { useUserContext } from "@/hooks/context/useUserContext.hook";
 
 export const RegisterAccountForm = ({ }) => {
-  const { registerUser } = useAuth();
+  const { registerUser } = useUserContext();
 
   const validateForm = object().shape({
     username: string().required('Informe seu nome'),
     email: string().required('Informe seu e-mail'),
     password: string().required('Informe sua senha'),
   })
+
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm<RegisterUserFormType>({
     resolver: yupResolver(validateForm)
   });

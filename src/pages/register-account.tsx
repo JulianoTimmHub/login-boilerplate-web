@@ -1,13 +1,13 @@
-import { useAuth } from "@/contexts/AuthContext";
 import Image from "next/image";
+import Link from "next/link";
 import imgLogin from '../assets/images/img-register-user.svg';
 import { Loading } from "@/components/loading/Loading";
 import { SnackbarMessage } from "../components/snackbar/SnackbarMessage";
-import Link from "next/link";
-import { RegisterAccountForm } from "@/components/registerAccount/RegisterAccountForm";
+import { RegisterAccountForm } from "@/components/forms/registerAccount/RegisterAccountForm";
+import { useUserContext } from "@/hooks/context/useUserContext.hook";
 
 const RegiserAccount = ({ }) => {
-  const { registerResults: { isLoading, statusRegister } } = useAuth();
+  const { registerResults: { isLoading, statusRegister }, resetUserStatus } = useUserContext();
 
   return (
     <div className={`container ${isLoading && 'opacity-25'}`}>
@@ -28,7 +28,10 @@ const RegiserAccount = ({ }) => {
         </div>
       </div>
       {!isLoading && statusRegister && (
-        <SnackbarMessage status={statusRegister} />
+        <SnackbarMessage 
+          status={statusRegister}
+          resetStatus={resetUserStatus}
+        />
       )}
       {isLoading && (
         <Loading />

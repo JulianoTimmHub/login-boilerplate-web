@@ -1,13 +1,13 @@
-import { LoginForm } from "@/components/login/LoginForm";
+import Link from "next/link";
 import Image from "next/image";
 import imgLogin from '../assets/images/img-login.svg';
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuthContext } from "@/hooks/context/useAuthContext.hook";
+import { LoginForm } from "@/components/forms/login/LoginForm";
 import { SnackbarMessage } from "@/components/snackbar/SnackbarMessage";
 import { Loading } from "@/components/loading/Loading";
-import Link from "next/link";
 
 const Login = () => {
-  const { signInResults: { isLoading, statusSignIn } } = useAuth();
+  const { signInResults: { isLoading, statusSignIn }, resetAuthStatus } = useAuthContext();
 
   return (
     <div className="container">
@@ -36,7 +36,10 @@ const Login = () => {
         </div>
       </div>
       {!isLoading && statusSignIn && (
-        <SnackbarMessage status={statusSignIn} />
+        <SnackbarMessage 
+          status={statusSignIn} 
+          resetStatus={resetAuthStatus} 
+        />
       )}
       {isLoading && (
         <Loading />
