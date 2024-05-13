@@ -4,9 +4,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { string, object } from 'yup';
 import styles from '../../../styles/login.module.css';
 import { useUserContext } from "@/hooks/context/useUserContext.hook";
+import { useEffect } from "react";
 
 export const RegisterAccountForm = ({ }) => {
-  const { registerUser } = useUserContext();
+  const { registerUser, registerResults: { statusRegister } } = useUserContext();
 
   const validateForm = object().shape({
     username: string().required('Informe seu nome'),
@@ -18,9 +19,15 @@ export const RegisterAccountForm = ({ }) => {
     register,
     handleSubmit,
     formState: { errors },
+    reset
   } = useForm<RegisterUserFormType>({
     resolver: yupResolver(validateForm)
   });
+
+  useEffect(() => {
+    if (statusRegister.color === 'success')
+      reset();
+  }, [statusRegister, reset])
 
   return (
     <form
