@@ -5,9 +5,10 @@ import { RecoverPasswordFormType } from "../../../types/AuthTypes";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { string, object } from 'yup';
 import styles from '../../../styles/login.module.css';
+import { useEffect } from "react";
 
 export const ForgotPasswordForm = ({ }) => {
-  const { recoverPassword } = useAuthContext();
+  const { recoverPassword, recoverPasswordResults: { statusRecoverPassword } } = useAuthContext();
 
   const validateForm = object().shape({
     email: string().required('Informe seu e-mail'),
@@ -18,10 +19,16 @@ export const ForgotPasswordForm = ({ }) => {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    reset
   } = useForm<RecoverPasswordFormType>({
     resolver: yupResolver(validateForm)
   });
+
+  useEffect(() => {
+    if (statusRecoverPassword.color === 'success')
+      reset();
+  }, [statusRecoverPassword, reset])
 
   return (
     <form

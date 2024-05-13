@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router'
 import Link from "next/link";
 import Image from "next/image";
 import imgLogin from '../assets/images/img-login.svg';
@@ -5,9 +6,16 @@ import { useAuthContext } from "@/hooks/context/useAuthContext.hook";
 import { LoginForm } from "@/components/forms/login/LoginForm";
 import { SnackbarMessage } from "@/components/snackbar/SnackbarMessage";
 import { Loading } from "@/components/loading/Loading";
+import { useEffect } from 'react';
 
 const Login = () => {
   const { signInResults: { isLoading, statusSignIn }, resetAuthStatus } = useAuthContext();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && statusSignIn.color === 'success')
+      router.push('/');
+  }, [isLoading, statusSignIn, router]);
 
   return (
     <div className="container">
