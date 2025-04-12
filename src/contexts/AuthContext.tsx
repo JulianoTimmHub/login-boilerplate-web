@@ -3,14 +3,20 @@ import { AuthContextType, SignInFormType, RecoverPasswordFormType } from "@/type
 import { StatusOptionsType } from "@/types/MessageTypes";
 import { useRecoverPasswordMutation } from '../hooks/mutation/useRecoverPasswordMutation.hook';
 import { useSignInMutation } from '../hooks/mutation/useSignInMutation.hook';
-import { ESnackbarMessage } from "@/components/snackbar/enum/snackbar-message.enum";
+import { ESnackbarMessage } from "../enum/ESnackbarMessage";
+import { logout } from '../api/auth.api';
+import { validateTokenApi } from "@/api/token.api";
+import { useRouter } from "next/router";
 
 export const AuthContext = createContext({} as AuthContextType);
 
 export const AuthProvider = ({ children }: any) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [statusSignIn, setStatusSignIn] = useState<StatusOptionsType>({ message: null, color: ''});
-  const [statusRecoverPassword, setStatusRecoverPassword] = useState<StatusOptionsType>({ message: null, color: ''});
+  const [statusLogout, setStatusLogout] = useState<StatusOptionsType>({ message: null, color: '' });
+  const [statusSignIn, setStatusSignIn] = useState<StatusOptionsType>({ message: null, color: '' });
+  const [statusRecoverPassword, setStatusRecoverPassword] = useState<StatusOptionsType>({ message: null, color: '' });
+
+  const router = useRouter();
 
   const {
     mutate: mutateSignIn,
@@ -21,7 +27,7 @@ export const AuthProvider = ({ children }: any) => {
     isPending: isPendingSignIn
   } = useSignInMutation();
 
-  const { 
+  const {
     mutate: mutateRecoverPassword,
     isError: isErrorRecoverPassword,
     data: dataRecoverPassword,
@@ -37,18 +43,18 @@ export const AuthProvider = ({ children }: any) => {
 
     if (isSuccessSignIn && dataSignIn) {
       if (dataSignIn?.response?.status === 404) {
-        setStatusSignIn({message: ESnackbarMessage.SIGN_IN.NOT_FOUND, color: 'error'});
+        setStatusSignIn({ message: ESnackbarMessage.SIGN_IN.NOT_FOUND, color: 'error' });
       } else if (dataSignIn?.response?.status === 401) {
-        setStatusSignIn({message: ESnackbarMessage.SIGN_IN.ERROR, color: 'error'});
+        setStatusSignIn({ message: ESnackbarMessage.SIGN_IN.ERROR, color: 'error' });
       } else {
-        setStatusSignIn({message: ESnackbarMessage.SIGN_IN.SUCCESS, color: 'success'});
+        setStatusSignIn({ message: ESnackbarMessage.SIGN_IN.SUCCESS, color: 'success' });
       }
       setIsLoading(false);
     }
 
     if (isErrorSignIn || errorSignIn) {
       setIsLoading(false);
-      setStatusSignIn({message: ESnackbarMessage.SIGN_IN.NOT_FOUND, color: 'error'});
+      setStatusSignIn({ message: ESnackbarMessage.SIGN_IN.NOT_FOUND, color: 'error' });
     }
   }, [
     isErrorSignIn,
@@ -60,7 +66,6 @@ export const AuthProvider = ({ children }: any) => {
     setStatusSignIn
   ]);
 
-
   useEffect(() => {
     if (isPendingRecoverPassword) {
       setIsLoading(true);
@@ -68,18 +73,18 @@ export const AuthProvider = ({ children }: any) => {
 
     if (isSuccessRecoverPassword && dataRecoverPassword) {
       if (dataRecoverPassword?.response?.status === 404) {
-        setStatusRecoverPassword({message: ESnackbarMessage.RECOVER_PASSWORD.NOT_FOUND, color: 'error'});
+        setStatusRecoverPassword({ message: ESnackbarMessage.RECOVER_PASSWORD.NOT_FOUND, color: 'error' });
       } else if (dataRecoverPassword?.response?.status === 401) {
-        setStatusRecoverPassword({message: ESnackbarMessage.RECOVER_PASSWORD.ERROR, color: 'error'});
+        setStatusRecoverPassword({ message: ESnackbarMessage.RECOVER_PASSWORD.ERROR, color: 'error' });
       } else {
-        setStatusRecoverPassword({message: ESnackbarMessage.RECOVER_PASSWORD.SUCCESS, color: 'success'});
+        setStatusRecoverPassword({ message: ESnackbarMessage.RECOVER_PASSWORD.SUCCESS, color: 'success' });
       }
       setIsLoading(false);
     }
 
     if (isErrorRecoverPassword || errorRecoverPassword) {
       setIsLoading(false);
-      setStatusRecoverPassword({message: ESnackbarMessage.RECOVER_PASSWORD.NOT_FOUND, color: 'error'});
+      setStatusRecoverPassword({ message: ESnackbarMessage.RECOVER_PASSWORD.NOT_FOUND, color: 'error' });
     }
   }, [
     isErrorRecoverPassword,
@@ -91,29 +96,48 @@ export const AuthProvider = ({ children }: any) => {
     setStatusRecoverPassword
   ]);
 
-  const signIn = async ({ 
-    email, password 
+  const signIn = async ({
+    email, password
   }: SignInFormType): Promise<void> => {
     mutateSignIn({ email, password });
+  }
+
+  const userLogout = async (): Promise<void> => {
+    await logout();
+    setStatusLogout({ message: ESnackbarMessage.LOGOUT.SUCCESS, color: 'success' });
+    router.push('/login');
   }
 
   const recoverPassword = async ({
     email, newPassword, confirmNewPassword
   }: RecoverPasswordFormType): Promise<void> => {
     if (newPassword !== confirmNewPassword) {
-      setStatusRecoverPassword({message: ESnackbarMessage.RECOVER_PASSWORD.PASSWORDS_NOT_EQUALS, color: 'error'});
+      setStatusRecoverPassword({ message: ESnackbarMessage.RECOVER_PASSWORD.PASSWORDS_NOT_EQUALS, color: 'error' });
     } else {
-      mutateRecoverPassword({email, newPassword, confirmNewPassword});
+      mutateRecoverPassword({ email, newPassword, confirmNewPassword });
     }
   }
 
   const resetAuthStatus = (): void => {
-    setStatusRecoverPassword({message: null, color: ''});
-    setStatusSignIn({message: null, color: ''});
+    setStatusRecoverPassword({ message: null, color: '' });
+    setStatusSignIn({ message: null, color: '' });
+    setStatusLogout({ message: null, color: '' });
   };
+
+  const validateToken = async (): Promise<void> => {
+    const tokenStatus = await validateTokenApi();
+    console.log({ tokenStatus });
+
+    if (tokenStatus?.status === 401) {
+      await logout();
+      setStatusLogout({ message: ESnackbarMessage.LOGOUT.TOKEN_INVALID, color: 'error' });
+      router.push('/login');
+    }
+  }
 
   const value = {
     signIn,
+    userLogout,
     recoverPassword,
     signInResults: {
       isLoading,
@@ -123,7 +147,11 @@ export const AuthProvider = ({ children }: any) => {
       isLoading,
       statusRecoverPassword
     },
-    resetAuthStatus
+    logoutResults: {
+      statusLogout
+    },
+    resetAuthStatus,
+    validateToken
   }
 
   return (
