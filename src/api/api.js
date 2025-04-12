@@ -1,7 +1,7 @@
 import axios from "axios";
 import nextConfig from '../../next.config.mjs';
 
-const { 
+const {
   protocol,
   host,
   port,
@@ -14,6 +14,10 @@ export const apiPath = axios.create({
 
 export const concatUrl = (urlPath) => {
   return axios.create({
-    baseURL: apiPath.defaults.baseURL.concat(urlPath)
+    baseURL: apiPath.defaults.baseURL.concat(urlPath),
+    withCredentials: true,
+    headers: {
+      'Content-Type': 'application/json'
+    }
   })
 };
