@@ -1,4 +1,4 @@
-import { ESnackbarMessage } from "@/components/snackbar/enum/snackbar-message.enum";
+import { ESnackbarMessage } from "../enum/ESnackbarMessage";
 import { useRegisterUserMutation } from "@/hooks/mutation/useRegisterUserMutation.hook";
 import { StatusOptionsType } from "@/types/MessageTypes";
 import { RegisterUserFormType, UserContextType } from "@/types/UserTypes";
@@ -8,7 +8,7 @@ export const UserContext = createContext({} as UserContextType);
 
 export const UserProvider = ({ children }: any) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [statusRegister, setStatusRegister] = useState<StatusOptionsType>({ message: null, color: ''});
+  const [statusRegister, setStatusRegister] = useState<StatusOptionsType>({ message: null, color: '' });
 
   const {
     mutate: mutateRegisterUser,
@@ -26,16 +26,16 @@ export const UserProvider = ({ children }: any) => {
 
     if (isSuccessRegister && dataRegister) {
       if (dataRegister?.response?.status === 409) {
-        setStatusRegister({message: ESnackbarMessage.REGISTER_USER.ALREADY_REGISTER, color: 'error'});
+        setStatusRegister({ message: ESnackbarMessage.REGISTER_USER.ALREADY_REGISTER, color: 'error' });
       } else {
-        setStatusRegister({message: ESnackbarMessage.REGISTER_USER.SUCCESS, color: 'success'});
+        setStatusRegister({ message: ESnackbarMessage.REGISTER_USER.SUCCESS, color: 'success' });
       }
       setIsLoading(false);
     }
 
     if (isErrorRegister || errorRegister) {
       setIsLoading(false);
-      setStatusRegister({message: ESnackbarMessage.REGISTER_USER.ERROR, color: 'error'});
+      setStatusRegister({ message: ESnackbarMessage.REGISTER_USER.ERROR, color: 'error' });
     }
   }, [
     isErrorRegister,
@@ -47,14 +47,14 @@ export const UserProvider = ({ children }: any) => {
     setStatusRegister
   ]);
 
-  const registerUser = async ({ 
-    username, email, password 
+  const registerUser = async ({
+    username, email, password
   }: RegisterUserFormType): Promise<void> => {
     mutateRegisterUser({ username, email, password })
   }
 
   const resetUserStatus = (): void => {
-    setStatusRegister({message: null, color: ''});
+    setStatusRegister({ message: null, color: '' });
   };
 
   const value = {

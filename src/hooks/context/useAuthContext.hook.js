@@ -4,17 +4,25 @@ import { AuthContext } from '../../contexts/AuthContext';
 export const useAuthContext = () => {
   const {
     signIn,
+    userLogout,
     recoverPassword,
+    logoutResults,
     signInResults,
     recoverPasswordResults,
-    resetAuthStatus
+    resetAuthStatus,
+    validateToken,
+    statusValidateToken
   } = useContext(AuthContext);
 
   return {
     signIn,
+    userLogout,
     recoverPassword,
+    logoutResults,
     signInResults,
     recoverPasswordResults,
-    resetAuthStatus
+    resetAuthStatus,
+    validateToken,
+    statusValidateToken
   }
 }

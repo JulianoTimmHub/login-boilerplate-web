@@ -9,13 +9,47 @@ import { Loading } from "@/components/loading/Loading";
 import { useEffect } from 'react';
 
 const Login = () => {
-  const { signInResults: { isLoading, statusSignIn }, resetAuthStatus } = useAuthContext();
+  const {
+    signInResults: {
+      isLoading,
+      statusSignIn
+    },
+    logoutResults: {
+      statusLogout
+    },
+    resetAuthStatus,
+  } = useAuthContext();
+
   const router = useRouter();
 
   useEffect(() => {
     if (!isLoading && statusSignIn.color === 'success')
       router.push('/');
   }, [isLoading, statusSignIn, router]);
+
+  const renderSnackbarMessage = () => {
+    if (isLoading) return null;
+
+    if (statusSignIn && statusSignIn.color) {
+      return (
+        <SnackbarMessage
+          status={statusSignIn}
+          resetStatus={resetAuthStatus}
+        />
+      );
+    }
+
+    if (statusLogout && statusLogout.color) {
+      return (
+        <SnackbarMessage
+          status={statusLogout}
+          resetStatus={resetAuthStatus}
+        />
+      );
+    }
+
+    return <></>;
+  };
 
   return (
     <div className="container">
@@ -43,12 +77,7 @@ const Login = () => {
           </div>
         </div>
       </div>
-      {!isLoading && statusSignIn && (
-        <SnackbarMessage 
-          status={statusSignIn} 
-          resetStatus={resetAuthStatus} 
-        />
-      )}
+      {renderSnackbarMessage()}
       {isLoading && (
         <Loading />
       )}

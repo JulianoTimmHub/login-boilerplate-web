@@ -14,5 +14,9 @@ export const ESnackbarMessage = {
     PASSWORDS_NOT_EQUALS: 'As senhas devem ser iguais!',
     ERROR: 'Erro ao tenhar alterar senha!',
     SUCCESS: 'Senha alterada com sucesso!'
-  }
+  },
+  LOGOUT: {
+    SUCCESS: "Deslogado com sucesso!",
+    TOKEN_INVALID: "Token inválido, realize o login novamente!"
+  },
 }
